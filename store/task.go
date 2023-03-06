@@ -6,6 +6,8 @@ import (
 	"github.com/sofuetakuma112/go_todo_app/entity"
 )
 
+// DBへのコネクション(*sqlx.Db, *sqlx.Txなど)を引数として受け取る
+
 func (r *Repository) ListTasks(
 	ctx context.Context, db Queryer, // *sqlx.Tx, *sqlx.DbともにQueryerを満たす
 ) (entity.Tasks, error) {

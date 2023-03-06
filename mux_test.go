@@ -1,16 +1,32 @@
 package main
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/sofuetakuma112/go_todo_app/config"
 )
 
 func TestNewMux(t *testing.T) {
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest(http.MethodGet, "/health", nil)
-	sut := NewMux()
+
+	ctx := context.Background()
+	cfg, err := config.New()
+	if err != nil {
+		t.Fatalf("falied to read env: %v", cfg)
+	}
+
+	sut, cleanup, err := NewMux(ctx, cfg)
+	if err != nil {
+		t.Fatalf("falied to create mux: %v", err)
+	}
+
+	t.Cleanup(cleanup)
+
 	sut.ServeHTTP(w, r)
 	resp := w.Result()
 	// Cleanupは、テスト（またはサブテスト）と

@@ -3,8 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
-
-	// "errors"
+	"errors"
 	"fmt"
 	"time"
 
@@ -12,6 +11,17 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/sofuetakuma112/go_todo_app/clock"
 	"github.com/sofuetakuma112/go_todo_app/config"
+)
+
+const (
+	// ErrCodeMySQLDuplicateEntry はMySQL系のDUPLICATEエラーコード
+	// https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html
+	// Error number: 1062; Symbol: ER_DUP_ENTRY; SQLSTATE: 23000
+	ErrCodeMySQLDuplicateEntry = 1062
+)
+
+var (
+	ErrAlreadyEntry = errors.New("duplicate entry")
 )
 
 // MySQLへのコネクションを確立して返す
@@ -68,6 +78,9 @@ var (
 	_ Execer   = (*sqlx.Tx)(nil)
 )
 
+// RDBMSに対する永続化操作を一つのRepository構造体のメソッドとして実装するメリット
+// 1. 複数のテーブルを一つの型のメソッドで操作できる
+// 2. DIを利用する場合、一つの型にまとまっていたほうが取り回しがしやすい
 type Repository struct {
 	Clocker clock.Clocker
 }
